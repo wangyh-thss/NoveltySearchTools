@@ -1,4 +1,4 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 
 class Constants:
@@ -32,4 +32,12 @@ class Constants:
     PUBLICATION_PATENT = 'patent'
     PUBLICATION_PROCEEDING = 'proceeding'
     PUBLICATION_THESIS = 'thesis'
+
+    ARTICLE_CLASS_DESC = {
+        PUBLICATION_ACHIEVEMENT: '科技成果',
+        PUBLICATION_JOURNAL: '期刊',
+        PUBLICATION_PATENT: '专利',
+        PUBLICATION_PROCEEDING: '会议论文',
+        PUBLICATION_THESIS: '学位论文',
+    }
 

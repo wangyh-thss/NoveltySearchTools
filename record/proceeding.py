@@ -1,4 +1,4 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 from publication import Publication
 
@@ -36,16 +36,3 @@ class Proceeding(Publication):
         self.year = year
         self.publisher = publisher
         self.pages = pages
-        self.label_map = {
-            '@{author}': self.concat_authors(self.authors),
-            '@{title}': self.title,
-            '@{conference name},': self.conference_name,
-            '@{conference address}': self.conference_address,
-            '@{date}': self.date,
-            '@{institute}': self.institute,
-            '@{proceeding}': self.proceeding,
-            '@{publish address}': self.publish_address,
-            '@{publisher}': self.publisher,
-            '@{year}': self.year,
-            '@{pages}': self.pages,
-        }

@@ -1,7 +1,8 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from common.publish_helper import build_output
 from parser import BibParser, MultiLinesParser
 from setting_dialog import SettingDialog
 reload(sys)
@@ -44,11 +45,17 @@ class AppWindow(QtWidgets.QMainWindow):
 
     # event handler
     def on_btn_select_file_click(self):
-        filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "选择文件")
-        if filename:
-            with open(filename, 'r') as f:
-                content = f.read()
-            self.origin_text.setText(content)
+        filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "选择文件")
+        if not filenames:
+            return
+        content = self.origin_text.toPlainText()
+        for filename in filenames:
+            try:
+                with open(filename, 'r') as f:
+                    content += f.read()
+            except:
+                pass
+        self.origin_text.setText(content)
 
     def on_btn_begin_convert_click(self):
         content = self.origin_text.toPlainText()
@@ -57,16 +64,13 @@ class AppWindow(QtWidgets.QMainWindow):
         if result is None:
             parser = MultiLinesParser()
             result = parser.parse_string(content)
-        output_content = self.build_output_content(result)
+        output_content = build_output(result)
         self.result_text.setText(output_content)
 
     def on_btn_config_label_click(self):
         dialog = SettingDialog()
         if dialog.exec_():
             dialog.config_mata_data_base()
-
-    def build_output_content(self, publish_list):
-        return u'\r\n\r\n'.join([r.export() for r in publish_list])
 
 
 def main():

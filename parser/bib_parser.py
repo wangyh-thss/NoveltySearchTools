@@ -1,4 +1,4 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 from pybtex.database import parse_file, parse_string
 from article_parser import ArticleParser

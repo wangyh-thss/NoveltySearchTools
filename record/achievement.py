@@ -1,4 +1,4 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 from publication import Publication
 
@@ -14,9 +14,3 @@ class Achievement(Publication):
         self.title = title
         self.year = year
         self.institute = institute
-        self.label_map = {
-            '@{author}': self.concat_authors(self.authors),
-            '@{title}': self.title,
-            '@{year}': self.year,
-            '@{institute}': self.institute,
-        }

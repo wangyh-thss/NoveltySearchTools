@@ -1,7 +1,8 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 import re
 from common.constants import Constants
+from common.func_helper import is_chinese_str
 
 
 class Publication(object):
@@ -34,6 +35,7 @@ class Publication(object):
         self.label_map['@{%s}' % Constants.LABEL_KEYWORD] = self.concat_keywords(keywords)
 
     def set_attr(self, attr, value):
+        attr = attr.lower()
         setattr(self, attr, value)
         label_name = ('@{%s}' % attr).replace('_', ' ')
         self.label_map[label_name] = value
@@ -44,8 +46,12 @@ class Publication(object):
 
     @staticmethod
     def concat_authors(authors):
-        return ', '.join(authors)
+        authors_str = u', '.join(authors[:3])
+        if len(authors) > 3:
+            etc_str = u', 等' if is_chinese_str(authors_str) else u', etc'
+            authors_str = authors_str + etc_str
+        return authors_str
 
     @staticmethod
     def concat_keywords(keywords):
-        return ', '.join(keywords)
+        return u', '.join(keywords)

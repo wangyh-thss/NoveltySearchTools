@@ -1,6 +1,7 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 from PyQt5 import QtCore, QtWidgets
+from common.constants import Constants
 from parser import MetadataBase
 from parser import default_metadata_filename
 from record import save_format, default_format_file
@@ -32,17 +33,17 @@ class SettingDialog(QtWidgets.QDialog):
         self.setLayout(main_v_layout)
 
     def create_label_config_layout(self):
-        max_num_per_column = 4
-        count_in_column = 0
+        max_num_per_row = 4
+        count_in_row = 0
         main_v_layout = QtWidgets.QVBoxLayout()
         main_v_layout.addWidget(QtWidgets.QLabel('标识符设置'))
-        labels_h_layout = QtWidgets.QHBoxLayout()
-        column_v_layout = QtWidgets.QVBoxLayout()
+        labels_v_layout = QtWidgets.QVBoxLayout()
+        row_h_layout = QtWidgets.QHBoxLayout()
         for label in MetadataBase.type_desc_dict:
-            if count_in_column >= max_num_per_column:
-                labels_h_layout.addLayout(column_v_layout)
-                column_v_layout = QtWidgets.QVBoxLayout()
-                count_in_column = 0
+            if count_in_row >= max_num_per_row:
+                labels_v_layout.addLayout(row_h_layout)
+                row_h_layout = QtWidgets.QHBoxLayout()
+                count_in_row = 0
             input_h_layout = QtWidgets.QHBoxLayout()
             label_desc = MetadataBase.type_desc_dict[label]
             q_label_name = '%s\r\n(%s)' % (label_desc, label)
@@ -51,15 +52,16 @@ class SettingDialog(QtWidgets.QDialog):
             input_h_layout.addWidget(QtWidgets.QLabel(q_label_name))
             input_h_layout.addWidget(label_input)
             self.label_input_dict[label] = label_input
-            column_v_layout.addLayout(input_h_layout)
-            count_in_column += 1
-        main_v_layout.addLayout(labels_h_layout)
+            row_h_layout.addLayout(input_h_layout)
+            count_in_row += 1
+        labels_v_layout.addLayout(row_h_layout)
+        main_v_layout.addLayout(labels_v_layout)
         return main_v_layout
 
     def create_output_format_layout(self):
         main_v_layout = QtWidgets.QVBoxLayout()
         main_v_layout.addWidget(QtWidgets.QLabel('输出格式设置'))
-        for article_class, desc in MetadataBase.article_class_desc.items():
+        for article_class, desc in Constants.ARTICLE_CLASS_DESC.items():
             class_h_layout = QtWidgets.QHBoxLayout()
             publish_class = MetadataBase.article_class_dict[article_class]
             class_input = QtWidgets.QLineEdit()
@@ -73,7 +75,7 @@ class SettingDialog(QtWidgets.QDialog):
     def create_class_tag_layout(self):
         main_v_layout = QtWidgets.QVBoxLayout()
         main_v_layout.addWidget(QtWidgets.QLabel('文献类型标识设置'))
-        for article_class, desc in MetadataBase.article_class_desc.items():
+        for article_class, desc in Constants.ARTICLE_CLASS_DESC.items():
             class_h_layout = QtWidgets.QHBoxLayout()
             class_tags = MetadataBase.get_class_string(article_class)
             class_input = QtWidgets.QLineEdit()

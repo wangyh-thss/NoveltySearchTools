@@ -1,4 +1,4 @@
-# encoding=utf-8
+# -*- coding:utf-8 -*-
 
 import json
 from record import Achievement, Journal, Patent, Proceeding, Thesis
@@ -65,14 +65,6 @@ class MetadataBase(object):
         Constants.PUBLICATION_PATENT: Patent,
         Constants.PUBLICATION_PROCEEDING: Proceeding,
         Constants.PUBLICATION_THESIS: Thesis,
-    }
-
-    article_class_desc = {
-        Constants.PUBLICATION_ACHIEVEMENT: '科技成果',
-        Constants.PUBLICATION_JOURNAL: '期刊',
-        Constants.PUBLICATION_PATENT: '专利',
-        Constants.PUBLICATION_PROCEEDING: '会议论文',
-        Constants.PUBLICATION_THESIS: '学位论文',
     }
 
     def __init__(self):
@@ -166,4 +158,4 @@ class MetadataBase(object):
         if tag_string == '':
             return
         labels = tag_string.split(';')
-        cls.type_label_dict[class_name] = set(labels)
+        cls.article_class_label_dict[class_name] = set(labels)
