@@ -4,7 +4,7 @@ from publication import Publication
 
 
 class Journal(Publication):
-    export_format = '@{author}. @{title}[J]. @{journal}, @{year},@{volume}(@{issue}):@{pages}. @{institute}'
+    export_format = '@{authors}. @{title}[J]. @{journal}, @{year},@{volume}(@{issue}):@{pages}. @{institute}'
 
     def __init__(self, title='', journal='', authors=None, year='', pages='', volume='', institute='', issue=''):
         super(Journal, self).__init__()

@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
-from constants import Constants
+import editdistance
+from constants import Constants, PublishSimilarity
 from record import Achievement, Journal, Patent, Proceeding, Thesis
 
 class_type_dict = {
@@ -11,8 +12,83 @@ class_type_dict = {
     Thesis: Constants.PUBLICATION_THESIS,
 }
 
+similarity_threshold = 0.9
+
+
+def set_similarity_threshold(threshold):
+    global similarity_threshold
+    similarity_threshold = threshold
+
+
+def get_similarity_threshold():
+    global similarity_threshold
+    return similarity_threshold
+
+
+def normalized_edit_distance(str1, str2):
+    return 1 - (float(editdistance.eval(str1, str2)) / max(len(str1), len(str2)))
+
+
+def similar_author(authors1, authors2):
+    global similarity_threshold
+
+    def contain_similar_author(author, author_list):
+        for author_candidate in author_list:
+            if normalized_edit_distance(author, author_candidate) > similarity_threshold:
+                return True
+        return False
+
+    bound = min(len(authors1), len(authors2)) * 0.6
+    similar_author_count = 0
+    for author1 in authors1:
+        if not contain_similar_author(author1, authors2):
+            continue
+        similar_author_count += 1
+        if similar_author_count >= bound:
+            return True
+    return False
+
+
+def similar_publish(publish1, publish2, category):
+    global similarity_threshold
+    if type(publish1) != type(publish2):
+        return PublishSimilarity.DIFFERENT
+    try:
+        title1 = getattr(publish1, 'title')
+        title2 = getattr(publish2, 'title')
+        authors1 = getattr(publish1, 'author')
+        authors2 = getattr(publish2, 'author')
+    except AttributeError:
+        return PublishSimilarity.DIFFERENT
+    title_similarity = normalized_edit_distance(title1, title2)
+    if title_similarity < similarity_threshold:
+        return PublishSimilarity.DIFFERENT
+    author_similar = similar_author(authors1, authors2)
+    if not author_similar:
+        return PublishSimilarity.DIFFERENT
+    if title_similarity >= 1:
+        return PublishSimilarity.SAME
+    return PublishSimilarity.SIMILAR
+
 
 def remove_duplicate(category_dict):
+    for category, publish_list in category_dict.items():
+        length = len(publish_list)
+        duplicate_publish_list = list()
+        similar_pair_list = list()
+        for i, publish1 in enumerate(publish_list):
+            for j in xrange(i + 1, length):
+                publish2 = publish_list[j]
+                similarity = similar_publish(publish1, publish2, category)
+                if similarity == PublishSimilarity.SAME:
+                    duplicate_publish_list.append(publish2)
+                elif similarity == PublishSimilarity.SIMILAR:
+                    similar_pair_list.append((publish1, publish2))
+        for duplicate_publish in duplicate_publish_list:
+            try:
+                publish_list.remove(duplicate_publish)
+            except ValueError:
+                continue
     return category_dict
 
 

@@ -4,7 +4,7 @@ from publication import Publication
 
 
 class Thesis(Publication):
-    export_format = '@{author}（导师：@{instructor}）. @{title}[D]. @{publisher}, @{year}'
+    export_format = '@{authors}（导师：@{instructor}）. @{title}[D]. @{publisher}, @{year}'
 
     def __init__(self, authors=None, instructor='', title='', publisher='', year=''):
         super(Thesis, self).__init__()

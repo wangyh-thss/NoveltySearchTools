@@ -5,3 +5,6 @@ tags
 *.dat
 config
 format
+build/
+dist/
+*.spec

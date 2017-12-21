@@ -8,7 +8,7 @@ from common.constants import Constants
 class MetadataBase(object):
     separator = ','
     type_label_dict = {
-        Constants.LABEL_ARTICLE_TYPE: {'{Reference Type}:', 'DT'},
+        Constants.LABEL_ARTICLE_TYPE: {'{Reference Type}:', 'PT'},
         Constants.LABEL_AUTHOR: {'{Author}:', 'AU'},
         Constants.LABEL_TITLE: {'{Title}:'},
         Constants.LABEL_KEYWORD: {'{Keywords}:'},

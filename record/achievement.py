@@ -4,7 +4,7 @@ from publication import Publication
 
 
 class Achievement(Publication):
-    export_format = '@{author}. @{title}[Z]. @{year}. @{institute}'
+    export_format = '@{authors}. @{title}[Z]. @{year}. @{institute}'
 
     def __init__(self, authors=None, title='', year='', institute=''):
         super(Achievement, self).__init__()

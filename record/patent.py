@@ -4,7 +4,7 @@ from publication import Publication
 
 
 class Patent(Publication):
-    export_format = '@{author}. @{title}:@{issue}[P]. @{publish date}. @{publisher}\r\n' \
+    export_format = '@{authors}. @{title}:@{issue}[P]. @{publish date}. @{publisher}\r\n' \
                     '【摘要】@{abstract}\r\n【主题词】@{keywords}\r\n【多余的其他信息】@{others}'
 
     def __init__(self, authors=None, title='', issue='', publish_date='', publisher='', abstract='', keywords='', others=''):

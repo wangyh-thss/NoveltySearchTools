@@ -1,6 +1,16 @@
 # -*- coding:utf-8 -*-
 
 
+class PublishSimilarity:
+
+    def __init__(self):
+        pass
+
+    SAME = 0
+    SIMILAR = 1
+    DIFFERENT = 2
+
+
 class Constants:
 
     def __init__(self):
@@ -40,4 +50,8 @@ class Constants:
         PUBLICATION_PROCEEDING: '会议论文',
         PUBLICATION_THESIS: '学位论文',
     }
+
+    @staticmethod
+    def format_label(label_name):
+        return ('@{%s}' % label_name).replace(' ', '_')
 
