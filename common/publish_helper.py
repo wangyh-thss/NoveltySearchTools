@@ -34,7 +34,7 @@ def similar_author(authors1, authors2):
 
     def contain_similar_author(author, author_list):
         for author_candidate in author_list:
-            if normalized_edit_distance(author, author_candidate) > similarity_threshold:
+            if normalized_edit_distance(author, author_candidate) >= similarity_threshold:
                 return True
         return False
 
@@ -56,8 +56,8 @@ def similar_publish(publish1, publish2, category):
     try:
         title1 = getattr(publish1, 'title')
         title2 = getattr(publish2, 'title')
-        authors1 = getattr(publish1, 'author')
-        authors2 = getattr(publish2, 'author')
+        authors1 = getattr(publish1, 'authors')
+        authors2 = getattr(publish2, 'authors')
     except AttributeError:
         return PublishSimilarity.DIFFERENT
     title_similarity = normalized_edit_distance(title1, title2)
@@ -84,6 +84,8 @@ def remove_duplicate(category_dict):
                     duplicate_publish_list.append(publish2)
                 elif similarity == PublishSimilarity.SIMILAR:
                     similar_pair_list.append((publish1, publish2))
+                    # treat similar publish as same
+                    duplicate_publish_list.append(publish2)
         for duplicate_publish in duplicate_publish_list:
             try:
                 publish_list.remove(duplicate_publish)
