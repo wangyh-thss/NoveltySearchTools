@@ -69,6 +69,7 @@ class AppWindow(QtWidgets.QMainWindow):
         result = parser.parse_string(content)
         output_content = build_output(result)
         self.result_text.setText(output_content)
+        self.add_message_box('转换完成')
 
     def on_btn_config_label_click(self):
         dialog = SettingDialog()
@@ -80,6 +81,12 @@ class AppWindow(QtWidgets.QMainWindow):
                                                          get_similarity_threshold(), 0, 1.0, 2)
         if ok:
             set_similarity_threshold(threshold)
+
+    def add_message_box(self, message, title='提示'):
+        msg = QtWidgets.QMessageBox()
+        msg.setText(message)
+        msg.setWindowTitle(title)
+        msg.exec_()
 
 
 def main():
