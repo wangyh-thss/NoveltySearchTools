@@ -3,6 +3,7 @@
 import editdistance
 from constants import Constants, PublishSimilarity
 from record import Achievement, Journal, Patent, Proceeding, Thesis
+from duplication_dialog import DuplicationDialog
 
 class_type_dict = {
     Achievement: Constants.PUBLICATION_ACHIEVEMENT,
@@ -72,26 +73,27 @@ def similar_publish(publish1, publish2, category):
 
 
 def remove_duplicate(category_dict):
+    unique_dict, duplicate_dict = dict(), dict()
     for category, publish_list in category_dict.items():
         length = len(publish_list)
-        duplicate_publish_list = list()
-        similar_pair_list = list()
+        duplicate_index_set = set()
         for i, publish1 in enumerate(publish_list):
+            if i in duplicate_index_set:
+                continue
+            current_duplicates = list()
             for j in xrange(i + 1, length):
                 publish2 = publish_list[j]
                 similarity = similar_publish(publish1, publish2, category)
-                if similarity == PublishSimilarity.SAME:
-                    duplicate_publish_list.append(publish2)
-                elif similarity == PublishSimilarity.SIMILAR:
-                    similar_pair_list.append((publish1, publish2))
-                    # treat similar publish as same
-                    duplicate_publish_list.append(publish2)
-        for duplicate_publish in duplicate_publish_list:
-            try:
-                publish_list.remove(duplicate_publish)
-            except ValueError:
-                continue
-    return category_dict
+                if similarity == PublishSimilarity.DIFFERENT:
+                    continue
+                current_duplicates.append(j)
+                duplicate_index_set.add(j)
+            if current_duplicates:
+                duplicate_dict.setdefault(category, []).append(
+                    map(lambda x: publish_list[x], [i] + current_duplicates))
+            else:
+                unique_dict.setdefault(category, []).append(publish_list[i])
+    return unique_dict, duplicate_dict
 
 
 def build_output_str(category_dict, type_order):
@@ -108,6 +110,12 @@ def build_output_str(category_dict, type_order):
     return content
 
 
+def merge_publish_dict(dict1, dict2):
+    for category, publish_list in dict2.items():
+        dict1[category] = dict1.get(category, []) + publish_list
+    return dict1
+
+
 def build_output(publish_list):
     publish_type_list = [
         Constants.PUBLICATION_JOURNAL,
@@ -122,6 +130,10 @@ def build_output(publish_list):
         if category is None:
             continue
         category_dict.setdefault(category, []).append(publish)
-    category_dict = remove_duplicate(category_dict)
-    return build_output_str(category_dict, publish_type_list)
+    unique_dict, duplicate_dict = remove_duplicate(category_dict)
+    duplication_dialog = DuplicationDialog(duplicate_dict)
+    if duplication_dialog.exec_():
+        selected_dict = duplication_dialog.get_selected_publish()
+        unique_dict = merge_publish_dict(unique_dict, selected_dict)
+    return build_output_str(unique_dict, publish_type_list)
 

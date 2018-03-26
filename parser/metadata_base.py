@@ -7,6 +7,7 @@ from common.constants import Constants
 
 class MetadataBase(object):
     separator = ','
+    begin_labels = ['{Reference Type}']
     type_label_dict = {
         Constants.LABEL_ARTICLE_TYPE: {'{Reference Type}:', 'PT'},
         Constants.LABEL_AUTHOR: {'{Author}:', 'AU'},
@@ -71,6 +72,10 @@ class MetadataBase(object):
         pass
 
     @classmethod
+    def set_begin_labels(cls, message):
+        cls.begin_labels = map(str.strip, message.split(cls.separator))
+
+    @classmethod
     def set_type_labels(cls, label_type, message):
         labels = message.split(cls.separator)
         cls.type_label_dict[label_type] = set(labels)
@@ -113,7 +118,7 @@ class MetadataBase(object):
     @classmethod
     def save(cls, filename):
         save_obj = dict()
-        save_items = ['type_label_dict', 'article_class_label_dict']
+        save_items = ['begin_labels', 'type_label_dict', 'article_class_label_dict']
         for item in save_items:
             item_dict = getattr(cls, item)
             temp_obj = dict()

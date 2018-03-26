@@ -11,6 +11,7 @@ class SettingDialog(QtWidgets.QDialog):
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
+        self.begin_label_input = QtWidgets.QLineEdit()
         self.label_input_dict = dict()
         self.class_tag_dict = dict()
         self.class_format_dict = dict()
@@ -26,11 +27,19 @@ class SettingDialog(QtWidgets.QDialog):
         button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
+        main_v_layout.addLayout(self.create_begin_label_config())
         main_v_layout.addLayout(self.create_label_config_layout())
         main_v_layout.addLayout(self.create_class_tag_layout())
         main_v_layout.addLayout(self.create_output_format_layout())
         main_v_layout.addWidget(button_box)
         self.setLayout(main_v_layout)
+
+    def create_begin_label_config(self):
+        main_v_layout = QtWidgets.QVBoxLayout()
+        main_v_layout.addWidget(QtWidgets.QLabel('文献起始标签设置'))
+        main_v_layout.addWidget(self.begin_label_input)
+        self.begin_label_input.setText(MetadataBase.separator.join(MetadataBase.begin_labels))
+        return main_v_layout
 
     def create_label_config_layout(self):
         max_num_per_row = 4
@@ -87,6 +96,8 @@ class SettingDialog(QtWidgets.QDialog):
         return main_v_layout
 
     def config_mata_data_base(self):
+        # set begin labels
+        MetadataBase.set_begin_labels(self.begin_label_input.text())
         # set labels
         for label, input_widget in self.label_input_dict.items():
             MetadataBase.set_label(label, input_widget.text())
@@ -102,3 +113,4 @@ class SettingDialog(QtWidgets.QDialog):
         # save to file
         MetadataBase.save(default_metadata_filename)
         save_format(default_format_file)
+

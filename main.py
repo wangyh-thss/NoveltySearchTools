@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
 
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from common.publish_helper import build_output, get_similarity_threshold, set_similarity_threshold
+from docx import Document
+from docx.shared import Pt
+from docx.oxml.ns import qn
 from parser import BibParser, MultiLinesParser
 from setting_dialog import SettingDialog
 reload(sys)
@@ -26,14 +29,14 @@ class AppWindow(QtWidgets.QMainWindow):
         button_h_layout = QtWidgets.QHBoxLayout()
         self.btn_select_file = QtWidgets.QPushButton('导入文件')
         self.btn_config_label = QtWidgets.QPushButton('配置转换规则')
-        self.btn_begin_convert = QtWidgets.QPushButton('开始转换')
-        # self.btn_export_file = QtWidgets.QPushButton('结果导出文件')
         self.btn_set_threshold = QtWidgets.QPushButton('设置相似度阈值')
+        self.btn_begin_convert = QtWidgets.QPushButton('开始转换')
+        self.btn_export_file = QtWidgets.QPushButton('结果导出文件')
         button_h_layout.addWidget(self.btn_select_file)
         button_h_layout.addWidget(self.btn_config_label)
-        button_h_layout.addWidget(self.btn_begin_convert)
-        # button_h_layout.addWidget(self.btn_export_file)
         button_h_layout.addWidget(self.btn_set_threshold)
+        button_h_layout.addWidget(self.btn_begin_convert)
+        button_h_layout.addWidget(self.btn_export_file)
         main_v_layout.addLayout(button_h_layout)
         self.result_text = QtWidgets.QTextEdit()
         main_v_layout.addWidget(self.result_text)
@@ -45,6 +48,7 @@ class AppWindow(QtWidgets.QMainWindow):
         self.btn_begin_convert.clicked.connect(self.on_btn_begin_convert_click)
         self.btn_config_label.clicked.connect(self.on_btn_config_label_click)
         self.btn_set_threshold.clicked.connect(self.on_btn_set_threshold_click)
+        self.btn_export_file.clicked.connect(self.on_btn_export_file_click)
 
     # event handler
     def on_btn_select_file_click(self):
@@ -87,6 +91,23 @@ class AppWindow(QtWidgets.QMainWindow):
         msg.setText(message)
         msg.setWindowTitle(title)
         msg.exec_()
+
+    def on_btn_export_file_click(self):
+        message = self.result_text.toPlainText()
+        save_filename, ext = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', '*.docx')
+        if not save_filename:
+            return
+        document = Document()
+        p = document.add_paragraph('')
+        for c in message:
+            run = p.add_run(c)
+            run.font.size = Pt(12)
+            if c.isalpha() or c.isdigit():
+                run.font.name = 'Time New Roman'
+            else:
+                run.font.name = u'宋体'
+                run._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
+        document.save(save_filename)
 
 
 def main():

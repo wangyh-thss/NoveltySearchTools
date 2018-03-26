@@ -59,28 +59,6 @@ def parse_record(record_data):
     return record
 
 
-def is_split_line(line):
-    try:
-        _ = int(line)
-        return True
-    except ValueError:
-        return False
-
-
-def split_content(content):
-    result = list()
-    lines = content.splitlines()
-    record_data = list()
-    for line in lines:
-        if is_split_line(line):
-            result.append(record_data)
-            record_data = list()
-        else:
-            record_data.append(line)
-    result.append(record_data)
-    return result
-
-
 class MultiLinesParser(ArticleParser):
 
     def __init__(self):
@@ -88,13 +66,39 @@ class MultiLinesParser(ArticleParser):
 
     def parse_string(self, content):
         result = list()
-        records_data = split_content(content)
+        records_data = self.split_content(content)
         for record_data in records_data:
             record = parse_record(record_data)
             if record is None:
                 continue
             result.append(record)
         return result
+
+    @classmethod
+    def split_content(cls, content):
+        result = list()
+        lines = content.splitlines()
+        record_data = list()
+        recorded = False
+        for line in lines:
+            if cls.is_split_line(line):
+                if recorded:
+                    result.append(record_data)
+                    record_data = [line]
+                else:
+                    record_data.append(line)
+                    recorded = True
+            elif recorded:
+                record_data.append(line)
+        result.append(record_data)
+        return result
+
+    @classmethod
+    def is_split_line(cls, line):
+        for begin_label in MetadataBase.begin_labels:
+            if line.startswith(begin_label):
+                return True
+        return False
 
 
 if __name__ == '__main__':
